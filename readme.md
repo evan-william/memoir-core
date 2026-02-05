@@ -253,4 +253,4 @@ For issues and questions, please open an issue on the GitHub repository.
 
 ---
 
-**Built for Claude users seeking persistent memory capabilities**
+**Built for Claude users seeking persistent memory capabilities !**
