@@ -1,0 +1,86 @@
+{
+  "tools": [
+    {
+      "name": "store_memory",
+      "description": "Store important information to long-term memory database. Use this to remember user preferences, facts, or any information that should persist across conversations.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Unique identifier for this memory (e.g., 'user_name', 'favorite_food', 'project_deadline')"
+          },
+          "content": {
+            "type": "string",
+            "description": "The information to store in memory"
+          }
+        },
+        "required": ["key", "content"]
+      },
+      "api_config": {
+        "method": "GET",
+        "url": "https://YOUR-APP-URL.streamlit.app/?api=store_memory&key={{key}}&content={{content}}",
+        "note": "Content dengan spasi akan otomatis di-encode oleh Claude"
+      }
+    },
+    {
+      "name": "search_memory",
+      "description": "Search for information in the long-term memory database. Use this to recall previously stored information.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query to find relevant memories (searches both keys and content)"
+          }
+        },
+        "required": ["query"]
+      },
+      "api_config": {
+        "method": "GET",
+        "url": "https://YOUR-APP-URL.streamlit.app/?api=search_memory&query={{query}}"
+      }
+    },
+    {
+      "name": "get_memory",
+      "description": "Get a specific memory by its key from the long-term memory database.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The unique key of the memory to retrieve"
+          }
+        },
+        "required": ["key"]
+      },
+      "api_config": {
+        "method": "GET",
+        "url": "https://YOUR-APP-URL.streamlit.app/?api=get_memory&key={{key}}"
+      }
+    }
+  ],
+  "instructions": {
+    "deployment": [
+      "1. Deploy aplikasi ke Streamlit Cloud",
+      "2. Ganti 'YOUR-APP-URL' dengan URL deployment Anda (tanpa https://)",
+      "3. Copy JSON schema tool-by-tool ke Claude settings",
+      "4. Test dengan URL di browser terlebih dahulu",
+      "5. Test dengan chat Claude"
+    ],
+    "example_usage": [
+      "User: 'Ingat ya, saya suka kopi tanpa gula'",
+      "Claude akan call: GET https://your-app.streamlit.app/?api=store_memory&key=coffee_preference&content=likes%20coffee%20without%20sugar",
+      "",
+      "User: 'Bagaimana saya minum kopi?'",
+      "Claude akan call: GET https://your-app.streamlit.app/?api=search_memory&query=coffee"
+    ],
+    "advantages": [
+      "✅ Tidak perlu FastAPI - Pure Streamlit",
+      "✅ Work langsung di Streamlit Cloud tanpa konfigurasi extra",
+      "✅ Simple GET requests, mudah di-test langsung di browser",
+      "✅ Automatic URL encoding oleh Claude",
+      "✅ Tidak perlu expose port tambahan"
+    ]
+  }
+}
