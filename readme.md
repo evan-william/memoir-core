@@ -1,45 +1,60 @@
-# Memoir-Core: Personal Memory Plugin for Claude
+# Memoir-Core
 
-A persistent memory database that enables Claude to store and recall important information across conversations using Streamlit's query parameters API.
+<div align="center">
+
+![Claude](https://img.shields.io/badge/Claude-191919?style=for-the-badge&logo=anthropic&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+
+**Long-term Memory Database for Claude AI**
+
+A lightweight, persistent memory solution that enables Claude to remember information across conversations.
+
+[Features](#features) • [Quick Start](#quick-start) • [Installation](#installation) • [Documentation](#claude-integration) • [Contributing](#contributing)
+
+</div>
+
+---
 
 ## Overview
 
-Memoir-Core provides Claude with long-term memory capabilities through a lightweight SQLite database and a pure Streamlit interface. This allows Claude to remember user preferences, important facts, and context across different chat sessions without requiring complex infrastructure.
+Memoir-Core provides Claude with persistent memory capabilities through a lightweight SQLite database and pure Streamlit interface. Store user preferences, important facts, and conversational context that persists across different chat sessions.
 
-## Features
+### Key Features
 
-- **Persistent Memory Storage**: Information persists across sessions in a SQLite database
-- **Smart Search**: Full-text search across memory keys and content
-- **Web-Based UI**: Streamlit interface for manual memory management
-- **API Integration**: Query parameter-based API for Claude integration
-- **Zero Configuration**: Works out-of-the-box on Streamlit Cloud
-- **Lightweight**: Minimal dependencies (Streamlit + Pandas)
+- **Persistent Storage** - SQLite-backed memory that survives session restarts
+- **Full-Text Search** - Search across both keys and content with case-insensitive matching
+- **Web Interface** - Streamlit-based UI for manual memory management
+- **RESTful API** - Query parameter-based endpoints for seamless Claude integration
+- **Zero Configuration** - Deploy to Streamlit Cloud without additional setup
+- **Minimal Dependencies** - Only Streamlit and Pandas required
 
 ## Architecture
 
 ```
-┌─────────────────┐
-│  Claude.ai      │
-│  (Custom Tools) │
-└────────┬────────┘
-         │
-         │ HTTPS GET Requests
-         │ (Query Parameters)
-         ▼
-┌─────────────────┐
-│ Streamlit App   │
-│ (memoir-core)   │
-├─────────────────┤
-│ • Query Handler │
-│ • Web UI        │
-│ • API Endpoints │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ SQLite Database │
-│ (memories.db)   │
-└─────────────────┘
+┌─────────────────────┐
+│   Claude.ai         │
+│   Custom Tools API  │
+└──────────┬──────────┘
+           │
+           │ HTTPS GET
+           │ Query Parameters
+           ▼
+┌─────────────────────┐
+│  Streamlit App      │
+│  ┌───────────────┐  │
+│  │ Query Handler │  │
+│  │ Web Interface │  │
+│  │ API Endpoints │  │
+│  └───────────────┘  │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  SQLite Database    │
+│  memoir_core.db     │
+└─────────────────────┘
 ```
 
 ## Quick Start
@@ -47,210 +62,235 @@ Memoir-Core provides Claude with long-term memory capabilities through a lightwe
 ### Local Development
 
 ```bash
-# Clone the repository
-git clone <repository-url>
+# Clone repository
+git clone https://github.com/yourusername/memoir-core.git
 cd memoir-core
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the application
+# Run application
 streamlit run app.py
 ```
 
-The application will be available at `http://localhost:8501`
+Access the application at `http://localhost:8501`
 
-### Deployment to Streamlit Cloud
+### Deployment
+
+#### Streamlit Cloud
 
 1. **Prepare Repository**
    ```bash
    git init
    git add .
    git commit -m "Initial commit"
-   git remote add origin <your-github-repo-url>
+   git remote add origin https://github.com/yourusername/memoir-core.git
    git push -u origin main
    ```
 
-2. **Deploy on Streamlit Cloud**
-   - Visit [share.streamlit.io](https://share.streamlit.io)
-   - Authenticate with GitHub
-   - Click "New app"
-   - Select your repository
-   - Set main file path: `app.py`
-   - Click "Deploy"
+2. **Deploy**
+   - Navigate to [share.streamlit.io](https://share.streamlit.io)
+   - Sign in with GitHub
+   - Click **New app**
+   - Select repository: `memoir-core`
+   - Main file path: `app.py`
+   - Click **Deploy**
 
-3. **Note Your Deployment URL**
-   - After deployment completes, you'll receive a URL like:
-   - `https://your-app-name.streamlit.app`
+3. **Note Deployment URL**
+   ```
+   https://your-app-name.streamlit.app
+   ```
 
-## Claude Integration
+## API Reference
 
-### API Endpoints
+### Endpoints
 
-The application exposes the following endpoints via query parameters:
+| Endpoint | Method | Parameters | Description |
+|----------|--------|------------|-------------|
+| `/?api=health` | GET | None | Health check |
+| `/?api=store_memory` | GET | `key`, `content` | Store/update memory |
+| `/?api=search_memory` | GET | `query` | Search memories |
+| `/?api=get_memory` | GET | `key` | Retrieve specific memory |
 
-| Endpoint | Parameters | Description |
-|----------|------------|-------------|
-| `/?api=health` | None | Health check endpoint |
-| `/?api=store_memory` | `key`, `content` | Store a new memory |
-| `/?api=search_memory` | `query` | Search memories |
-| `/?api=get_memory` | `key` | Retrieve specific memory |
-
-### Testing the API
-
-Before configuring Claude, verify the API endpoints:
+### Testing API
 
 ```bash
 # Health check
-https://your-app-name.streamlit.app/?api=health
+curl "https://your-app-name.streamlit.app/?api=health"
 
 # Store memory
-https://your-app-name.streamlit.app/?api=store_memory&key=test&content=Hello%20World
+curl "https://your-app-name.streamlit.app/?api=store_memory&key=user_name&content=John%20Doe"
 
-# Search memory
-https://your-app-name.streamlit.app/?api=search_memory&query=test
+# Search memories
+curl "https://your-app-name.streamlit.app/?api=search_memory&query=john"
 
-# Get memory
-https://your-app-name.streamlit.app/?api=get_memory&key=test
+# Get specific memory
+curl "https://your-app-name.streamlit.app/?api=get_memory&key=user_name"
 ```
 
-### Claude Configuration
+## Claude Integration
 
-#### Step 1: Enable Custom Tools
+### Setup Custom Tools
 
-1. Navigate to [claude.ai](https://claude.ai)
-2. Open Settings (⚙️)
-3. Select "Feature Preview" tab
-4. Enable "Custom Tools"
+1. **Enable Custom Tools**
+   - Open [claude.ai](https://claude.ai)
+   - Navigate to Settings → Feature Preview
+   - Enable **Custom Tools**
 
-#### Step 2: Configure store_memory Tool
+2. **Add store_memory Tool**
 
-**Tool Name:** `store_memory`
+   **Tool Name:** `store_memory`
 
-**Description:**
+   **Description:**
+   ```
+   Store important information to long-term memory database. Use this to remember user preferences, facts, or any information that should persist across conversations.
+   ```
+
+   **Input Schema:**
+   ```json
+   {
+     "type": "object",
+     "properties": {
+       "key": {
+         "type": "string",
+         "description": "Unique identifier for this memory (e.g., 'user_name', 'favorite_food', 'project_deadline')"
+       },
+       "content": {
+         "type": "string",
+         "description": "The information to store in memory"
+       }
+     },
+     "required": ["key", "content"]
+   }
+   ```
+
+   **API Configuration:**
+   - Method: `GET`
+   - URL: `https://your-app-name.streamlit.app/?api=store_memory&key={{key}}&content={{content}}`
+
+3. **Add search_memory Tool**
+
+   **Tool Name:** `search_memory`
+
+   **Description:**
+   ```
+   Search for information in the long-term memory database. Use this to recall previously stored information.
+   ```
+
+   **Input Schema:**
+   ```json
+   {
+     "type": "object",
+     "properties": {
+       "query": {
+         "type": "string",
+         "description": "Search query to find relevant memories (searches both keys and content)"
+       }
+     },
+     "required": ["query"]
+   }
+   ```
+
+   **API Configuration:**
+   - Method: `GET`
+   - URL: `https://your-app-name.streamlit.app/?api=search_memory&query={{query}}`
+
+### Usage Examples
+
+**Store Information:**
 ```
-Store important information to long-term memory database. Use this to remember user preferences, facts, or any information that should persist across conversations.
-```
+User: "Remember, my name is John and I prefer dark mode"
 
-**Input Schema:**
-```json
-{
-  "type": "object",
-  "properties": {
-    "key": {
-      "type": "string",
-      "description": "Unique identifier for this memory (e.g., 'user_name', 'favorite_food', 'project_deadline')"
-    },
-    "content": {
-      "type": "string",
-      "description": "The information to store in memory"
-    }
-  },
-  "required": ["key", "content"]
-}
-```
-
-**API Configuration:**
-- Method: `GET`
-- URL: `https://your-app-name.streamlit.app/?api=store_memory&key={{key}}&content={{content}}`
-- Headers: (leave empty)
-
-#### Step 3: Configure search_memory Tool
-
-**Tool Name:** `search_memory`
-
-**Description:**
-```
-Search for information in the long-term memory database. Use this to recall previously stored information.
-```
-
-**Input Schema:**
-```json
-{
-  "type": "object",
-  "properties": {
-    "query": {
-      "type": "string",
-      "description": "Search query to find relevant memories (searches both keys and content)"
-    }
-  },
-  "required": ["query"]
-}
-```
-
-**API Configuration:**
-- Method: `GET`
-- URL: `https://your-app-name.streamlit.app/?api=search_memory&query={{query}}`
-- Headers: (leave empty)
-
-## Usage Examples
-
-### Storing Information
-
-```
-User: "My name is John and I prefer dark mode interfaces"
-Claude: [Uses store_memory tool]
-  - key: "user_name"
-  - content: "John"
+Claude: [Calls store_memory]
+  key: "user_name"
+  content: "John"
   
-  [Uses store_memory tool]
-  - key: "ui_preference"
-  - content: "dark mode"
+  [Calls store_memory]
+  key: "ui_preference"
+  content: "dark mode"
 ```
 
-### Recalling Information
-
+**Retrieve Information:**
 ```
-User: "What's my name again?"
-Claude: [Uses search_memory tool]
-  - query: "name"
+User: "What's my name?"
+
+Claude: [Calls search_memory]
+  query: "name"
   
-Result: "Your name is John"
+Response: "Your name is John"
 ```
 
-## Technical Details
-
-### Dependencies
-
-```
-streamlit>=1.28.0
-pandas>=2.0.0
-```
-
-### Database Schema
+## Database Schema
 
 ```sql
 CREATE TABLE memories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     key TEXT UNIQUE NOT NULL,
     content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+    timestamp TEXT NOT NULL
+);
 ```
 
-### Why Pure Streamlit?
+## Tech Stack
 
-This implementation uses Streamlit's native query parameters instead of FastAPI for several advantages:
+- **Backend:** Streamlit (Query Parameters API)
+- **Database:** SQLite
+- **Frontend:** Streamlit UI Components
+- **Language:** Python 3.8+
 
-- **Simplicity**: No additional server framework required
-- **Deployment**: Works immediately on Streamlit Cloud without configuration
-- **Maintenance**: Single framework to manage
-- **Testing**: Easy to test via browser URLs
-- **Reliability**: Leverages Streamlit's built-in request handling
+## Why Pure Streamlit?
 
-## License
+| Feature | Memoir-Core | Traditional FastAPI |
+|---------|-------------|---------------------|
+| Framework | Single (Streamlit) | Multiple (FastAPI + Frontend) |
+| Deployment | One-click Streamlit Cloud | Requires server configuration |
+| Testing | Browser URL | API client required |
+| Port Management | Handled by Streamlit | Manual port exposure |
+| Dependencies | 2 packages | 5+ packages |
 
-MIT License - See LICENSE file for details
+## Project Structure
+
+```
+memoir-core/
+├── app.py                 # Main Streamlit application
+├── test_api.py           # API test suite
+├── requirements.txt      # Python dependencies
+├── claude_tools.json     # Claude tool configurations
+└── README.md            # Documentation
+```
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 
-For issues and questions, please open an issue on the GitHub repository.
+- **Issues:** [GitHub Issues](https://github.com/yourusername/memoir-core/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/yourusername/memoir-core/discussions)
+- **Documentation:** [Wiki](https://github.com/yourusername/memoir-core/wiki)
+
+## Acknowledgments
+
+- Built for the [Claude](https://claude.ai) AI assistant by Anthropic
+- Powered by [Streamlit](https://streamlit.io)
+- Database: [SQLite](https://www.sqlite.org)
 
 ---
 
-**Built for Claude users seeking persistent memory capabilities !**
+<div align="center">
+
+**Made by Evan William**
+
+[⬆ Back to Top](#memoir-core)
+
+</div>
